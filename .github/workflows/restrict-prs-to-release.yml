@@ -1,0 +1,16 @@
+name: Restrict PRs to release branch
+
+on:
+  pull_request:
+    branches:
+      - release
+
+jobs:
+  check-source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR is from develop
+        if: github.head_ref != 'develop'
+        run: |
+          echo "❌ Pull requests to release must come from develop"
+          exit 1
