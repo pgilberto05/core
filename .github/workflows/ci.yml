@@ -44,11 +44,8 @@ jobs:
           out: 'reports'
           scan: '.'
 
-      - name: 📤 Upload OWASP report (artifact)
-        uses: actions/upload-artifact@v3
-        with:
-          name: dependency-check-report
-          path: reports/dependency-check-report.html
+      - name: List generated files
+        run: ls -alh reports/
 
       - name: 🔍 Run SonarQube analysis
         env:
