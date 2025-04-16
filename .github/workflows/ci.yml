@@ -1,67 +1,66 @@
-name: CI - NestJS Quality Checks
+name: CI - NestJS API Quality
 
 on:
+  push:
+    branches:
+      - develop
+      - release
   pull_request:
     branches:
       - develop
       - release
 
 jobs:
-  owasp:
-    name: OWASP Dependency Check
+  build-and-analyze:
+    name: Build, Test, OWASP & SonarQube
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Set up Java
+    steps:
+      - name: 🛎 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests and generate coverage
+        run: npm run test:cov
+
+      - name: ☕ Setup Java for Sonar & OWASP
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Run OWASP Dependency Check
+      - name: 🛡 Run OWASP Dependency-Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
-          project: ${{ github.repository }}
-          scanpath: .
+          project: 'nestjs-api'
           format: 'HTML'
+          out: 'reports'
+          scan: '.'
 
-  sonar:
-    name: SonarQube Analysis
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+      - name: 📤 Upload OWASP report (artifact)
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-check-report
+          path: reports/dependency-check-report.html
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
-        run: npm run build
-
-      - name: Run tests with coverage
-        run: npm run test:cov
-
-      - name: SonarQube Scan
+      - name: 🔍 Run SonarQube analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           npx sonar-scanner \
-            -Dsonar.projectKey=coreApp \
+            -Dsonar.projectKey=core-api \
             -Dsonar.sources=src \
-            -Dsonar.tests=src \
+            -Dsonar.tests=test \
             -Dsonar.test.inclusions=**/*.spec.ts \
+            -Dsonar.exclusions=**/node_modules/**,dist/** \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.sourceEncoding=UTF-8 \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-
-  coverage:
-    name: Test Coverage Threshold
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests with coverage
-        run: npm run test:cov
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
