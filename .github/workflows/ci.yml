@@ -55,12 +55,14 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           npx sonar-scanner \
-            -Dsonar.projectKey=core-api \
+            -Dsonar.projectKey=pgilberto05 \
+            -Dsonar.organization=pgilberto05 \
             -Dsonar.sources=src \
             -Dsonar.tests=test \
+            -Dsonar.exclusions=.scannerwork/** \
             -Dsonar.test.inclusions=**/*.spec.ts \
             -Dsonar.exclusions=**/node_modules/**,dist/** \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
             -Dsonar.sourceEncoding=UTF-8 \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}

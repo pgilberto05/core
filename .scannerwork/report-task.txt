@@ -1,6 +1,7 @@
-projectKey=coreApp
-serverUrl=http://localhost:9000
-serverVersion=25.4.0.105899
-dashboardUrl=http://localhost:9000/dashboard?id=coreApp
-ceTaskId=16ea68f0-4c3e-4487-b989-c8790fdaeee2
-ceTaskUrl=http://localhost:9000/api/ce/task?id=16ea68f0-4c3e-4487-b989-c8790fdaeee2
+organization=pgilberto05
+projectKey=pgilberto05
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.62140
+dashboardUrl=https://sonarcloud.io/dashboard?id=pgilberto05
+ceTaskId=AZZBkeT54J1Q1PeegQC2
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZZBkeT54J1Q1PeegQC2
