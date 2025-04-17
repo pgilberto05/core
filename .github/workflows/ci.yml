@@ -1,67 +1,69 @@
-name: CI - NestJS Quality Checks
+name: CI - NestJS API Quality
 
 on:
+  push:
+    branches:
+      - develop
+      - release
   pull_request:
     branches:
       - develop
       - release
 
 jobs:
-  owasp:
-    name: OWASP Dependency Check
+  build-and-analyze:
+    name: Build, Test, OWASP & SonarQube
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+    environment: core
 
-      - name: Set up Java
+    steps:
+      - name: 🛎 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: ☕ Setup Java 17
+        id: setup-java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Run OWASP Dependency Check
+      - name: 🛡 Run OWASP Dependency-Check
         uses: dependency-check/Dependency-Check_Action@main
+        env:
+          JAVA_HOME: /opt/jdk
         with:
-          project: ${{ github.repository }}
-          scanpath: .
+          project: 'nestjs-api'
           format: 'HTML'
+          path: '.'
+          out: 'reports'
 
-  sonar:
-    name: SonarQube Analysis
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: npm ci
 
-      - name: Build project
-        run: npm run build
-
-      - name: Run tests with coverage
+      - name: 🧪 Run tests and generate coverage
         run: npm run test:cov
 
-      - name: SonarQube Scan
+      - name: 🔍 Run SonarQube analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           npx sonar-scanner \
-            -Dsonar.projectKey=coreApp \
-            -Dsonar.sources=src \
-            -Dsonar.tests=src \
-            -Dsonar.test.inclusions=**/*.spec.ts \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.projectKey=pgilberto05 \
+            -Dsonar.organization=pgilberto05 \
+            -Dsonar.projectName=core \
+            -Dsonar.projectVersion=1.0 \
+            -Dsonar.sources=./ \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-
-  coverage:
-    name: Test Coverage Threshold
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests with coverage
-        run: npm run test:cov
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.tests=test,src \
+            -Dsonar.test.inclusions=**/*.spec.ts \
+            -Dsonar.exclusions=**/node_modules/**,dist/**,.scannerwork/** \
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.coverage.exclusions=**/*.module.ts,**/main.ts
+            

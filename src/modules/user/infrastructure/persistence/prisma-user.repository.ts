@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../../domain/entities/user.entity';
 import { UserRepository } from '../../domain/repositories/user.repository';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../../../prisma/prisma.service';
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
@@ -35,7 +35,7 @@ export class PrismaUserRepository implements UserRepository {
       data: {
         name: user.name,
         password: user.password,
-        updatedAt: Date.now().toLocaleString(),
+        updatedAt: new Date(),
       },
     });
   }

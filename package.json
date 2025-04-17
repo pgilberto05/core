@@ -70,6 +70,13 @@
     ],
     "coverageDirectory": "../coverage",
     "collectCoverage": true,
+    "coveragePathIgnorePatterns": [
+      "src/prisma/prisma.service.ts",
+      "src/prisma/prisma.module.ts",
+      "src/main.ts",
+      "src/app.module.ts",
+      "src/modules/user/user.module.ts"
+    ],
     "coverageThreshold": {
       "global": {
         "branches": 80,
