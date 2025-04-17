@@ -1,0 +1,62 @@
+name: CI - NestJS API Quality
+
+on:
+  push:
+    branches:
+      - develop
+      - release
+  pull_request:
+    branches:
+      - develop
+      - release
+
+jobs:
+  build-and-analyze:
+    name: Build, Test, OWASP & SonarQube
+    runs-on: ubuntu-latest
+    environment: core
+
+    steps:
+      - name: 🛎 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: 🛡 Run OWASP Dependency-Check
+        uses: dependency-check/Dependency-Check_Action@main
+        env:
+          JAVA_HOME: /opt/jdk
+        with:
+          project: 'nestjs-api'
+          format: 'HTML'
+          path: '.'
+          out: 'reports'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests and generate coverage
+        run: npm run test:cov
+
+      - name: 🔍 Run SonarQube analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          npx sonar-scanner \
+            -Dsonar.projectKey=pgilberto05 \
+            -Dsonar.organization=pgilberto05 \
+            -Dsonar.projectName=core \
+            -Dsonar.projectVersion=1.0 \
+            -Dsonar.sources=./ \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.tests=test,src \
+            -Dsonar.test.inclusions=**/*.spec.ts \
+            -Dsonar.exclusions=**/node_modules/**,dist/**,.scannerwork/**,reports/** \
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.coverage.exclusions=**/*.module.ts,**/main.ts
+            
