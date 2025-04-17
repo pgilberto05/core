@@ -39,12 +39,12 @@ jobs:
           echo "JAVA_HOME is $JAVA_HOME"
       
       - name: 🛡 Run OWASP Dependency-Check
-        uses: OWASP/dependency-check-action@v2
+        uses: dependency-check/Dependency-Check_Action@main
         with:
-          scanPath: '.'
           project: 'nestjs-api'
           format: 'HTML'
-          outputDirectory: 'reports'
+          path: '.'
+          out: 'reports'
 
       - name: List generated files
         run: ls -alh reports/
