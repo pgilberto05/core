@@ -22,7 +22,7 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: ☕ Setup Java 17
         id: setup-java
@@ -41,9 +41,6 @@ jobs:
           path: '.'
           out: 'reports'
 
-      - name: List generated files
-        run: ls -alh reports/
-
       - name: 📦 Install dependencies
         run: npm ci
 
@@ -57,12 +54,15 @@ jobs:
           npx sonar-scanner \
             -Dsonar.projectKey=pgilberto05 \
             -Dsonar.organization=pgilberto05 \
-            -Dsonar.sources=src \
-            -Dsonar.tests=test \
-            -Dsonar.exclusions=.scannerwork/** \
-            -Dsonar.test.inclusions=**/*.spec.ts \
-            -Dsonar.exclusions=**/node_modules/**,dist/** \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-            -Dsonar.sourceEncoding=UTF-8 \
+            -Dsonar.projectName=core \
+            -Dsonar.projectVersion=1.0 \
+            -Dsonar.sources=./ \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.tests=test,src \
+            -Dsonar.test.inclusions=**/*.spec.ts \
+            -Dsonar.exclusions=**/node_modules/**,dist/**,.scannerwork/** \
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.coverage.exclusions=**/*.module.ts,**/main.ts
+            
