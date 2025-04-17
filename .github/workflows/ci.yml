@@ -25,13 +25,6 @@ jobs:
         with:
           node-version: '22'
 
-      - name: ☕ Setup Java 17
-        id: setup-java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
       - name: 🛡 Run OWASP Dependency-Check
         uses: dependency-check/Dependency-Check_Action@main
         env:
@@ -62,7 +55,7 @@ jobs:
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.tests=test,src \
             -Dsonar.test.inclusions=**/*.spec.ts \
-            -Dsonar.exclusions=**/node_modules/**,dist/**,.scannerwork/** \
+            -Dsonar.exclusions=**/node_modules/**,dist/**,.scannerwork/**,reports/** \
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
             -Dsonar.coverage.exclusions=**/*.module.ts,**/main.ts
