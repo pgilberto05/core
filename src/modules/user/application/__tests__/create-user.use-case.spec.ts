@@ -1,6 +1,6 @@
-import { CreateUserUseCase } from './create-user.use-case';
-import { UserService } from '../domain/services/user.service';
-import { UserRepository } from '../domain/repositories/user.repository';
+import { UserRepository } from '../../domain/repositories/user.repository';
+import { UserService } from '../../domain/services/user.service';
+import { CreateUserUseCase } from '../create-user.use-case';
 
 describe('CreateUserUseCase', () => {
   let useCase: CreateUserUseCase;
