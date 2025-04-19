@@ -7,8 +7,4 @@ export class User {
     public createdAt?: Date,
     public updatedAt?: Date,
   ) {}
-
-  updateEmail(newEmail: string) {
-    this.email = newEmail;
-  }
 }

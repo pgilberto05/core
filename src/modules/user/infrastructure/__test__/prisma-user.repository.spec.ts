@@ -9,6 +9,7 @@ describe('PrismaUserRepository', () => {
 
   const mockPrismaService = {
     user: {
+      findMany: jest.fn(),
       findUnique: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
@@ -31,6 +32,23 @@ describe('PrismaUserRepository', () => {
     prisma = module.get(PrismaService);
 
     jest.clearAllMocks();
+  });
+
+  describe('findAll', () => {
+    it('should return a list of users', async () => {
+      const mockUsers = [
+        { id: 1, name: 'Ana', email: 'ana@empresa.com' },
+        { id: 2, name: 'Luis', email: 'luis@empresa.com' },
+      ];
+
+      (prisma.user.findMany as jest.Mock).mockResolvedValue(mockUsers);
+
+      const result = await repository.findAll();
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toBeInstanceOf(User);
+      expect(result[0].name).toBe('Ana');
+    });
   });
 
   describe('findById', () => {
@@ -66,6 +84,12 @@ describe('PrismaUserRepository', () => {
 
       expect(result).toBeInstanceOf(User);
       expect(result?.email).toBe('ana@empresa.com');
+    });
+
+    it('should return null when user not found by email', async () => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+      const result = await repository.findByEmail('sin@empresa.com');
+      expect(result).toBeNull();
     });
   });
 

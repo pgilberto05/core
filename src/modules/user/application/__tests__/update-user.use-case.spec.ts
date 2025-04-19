@@ -40,13 +40,21 @@ describe('UpdateUserUseCase', () => {
     userRepo.findById.mockResolvedValue(null);
 
     await expect(
-      useCase.execute(1, new User(1, 'Test', 'test@email.com', '123456')),
+      useCase.execute(1, {
+        name: 'Test',
+        email: 'test@email.com',
+        password: '123456',
+      }),
     ).rejects.toThrow(NotFoundException);
   });
 
   it('should update user with hashed password if provided', async () => {
     const existingUser = new User(1, 'Old', 'old@email.com', 'oldpass');
-    const newUser = new User(1, 'New', 'new@email.com', 'newpass');
+    const newUser = {
+      name: 'New',
+      email: 'new@email.com',
+      password: 'newpass',
+    };
 
     userRepo.findById.mockResolvedValue(existingUser);
     userService.hashPassword.mockResolvedValue('hashedpass');
@@ -75,7 +83,11 @@ describe('UpdateUserUseCase', () => {
 
   it('should keep old password if new one is not provided', async () => {
     const existingUser = new User(1, 'Old', 'old@email.com', 'oldpass');
-    const newUser = new User(1, 'New', 'new@email.com', undefined); // No password
+    const newUser = {
+      name: 'New',
+      email: 'new@email.com',
+      password: undefined,
+    }; // No password
 
     userRepo.findById.mockResolvedValue(existingUser);
 

@@ -30,7 +30,7 @@ describe('CreateUserUseCase', () => {
     mockUserService.hashPassword.mockResolvedValue(hashedPassword);
 
     // Act
-    await useCase.execute(name, email, password);
+    await useCase.execute({ name, email, password });
 
     // Assert
     expect(mockUserService.hashPassword).toHaveBeenCalledWith(password);
